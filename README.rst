@@ -1,3 +1,7 @@
+.. image:: https://landscape.io/github/fpietka/rds-pgbadger/master/landscape.svg?style=flat
+   :target: https://landscape.io/github/fpietka/rds-pgbadger/master
+   :alt: Code Health
+
 ============
 RDS-Pgbadger
 ============
