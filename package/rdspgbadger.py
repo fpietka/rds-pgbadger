@@ -132,12 +132,13 @@ def main():
         logger.info("File(s) downloaded. Not processing with PG Badger.")
     else:
         logger.info("Generating PG Badger report.")
-        subprocess.call("{} -p \"%t:%r:%u@%d:[%p]:\" -o {}/report.html "
-                        "{}/error/*.log.*".format(pgbadger, args.output,
-                                                  args.output),
-                        shell=True,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE)
+        command = ("{} -p \"%t:%r:%u@%d:[%p]:\" -o {}/report.html "
+                   "{}/error/*.log.*".format(pgbadger, args.output,
+                                             args.output))
+        logger.debug("Command:")
+        logger.debug(command)
+        subprocess.call(command, shell=True)
+        logger.info("Done")
 
 
 if __name__ == '__main__':
