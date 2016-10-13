@@ -69,7 +69,7 @@ def define_logger(verbose=False):
     logger.addHandler(consoleHandler)
 
 
-def get_all_logs(dbinstance_id, output, region=None):
+def get_all_logs(dbinstance_id, output, date=None, region=None):
     if region:
         client = boto3.client("rds", region_name=region)
     else:
@@ -81,7 +81,8 @@ def get_all_logs(dbinstance_id, output, region=None):
     )
 
     for response in response_iterator:
-        for log in response.get("DescribeDBLogFiles"):
+        for log in (name for name in response.get("DescribeDBLogFiles")
+                    if date in name["LogFileName"]):
             response = client.download_db_log_file_portion(
                 DBInstanceIdentifier=dbinstance_id,
                 LogFileName=log["LogFileName"]
@@ -113,7 +114,7 @@ def main():
     logger.debug("pgbadger found")
 
     try:
-        get_all_logs(args.instance, args.output, args.region)
+        get_all_logs(args.instance, args.output, args.date, args.region)
     except (EndpointConnectionError, ClientError) as e:
         logger.error(e)
         exit(1)
