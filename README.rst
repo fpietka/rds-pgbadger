@@ -1,6 +1,15 @@
 .. image:: https://landscape.io/github/fpietka/rds-pgbadger/master/landscape.svg?style=flat
    :target: https://landscape.io/github/fpietka/rds-pgbadger/master
    :alt: Code Health
+.. image:: https://img.shields.io/pypi/v/rdspgbadger.svg
+   :target: https://pypi.python.org/pypi/rdspgbadger
+   :alt: Version
+.. image:: https://img.shields.io/pypi/pyversions/rdspgbadger.svg
+   :target: https://pypi.python.org/pypi/rdspgbadger
+   :alt: Python versions supported
+.. image:: https://img.shields.io/pypi/l/rdspgbadger.svg
+   :target: https://pypi.python.org/pypi/rdspgbadger
+   :alt: License
 
 ============
 RDS-Pgbadger
