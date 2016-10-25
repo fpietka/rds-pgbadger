@@ -5,10 +5,10 @@ from setuptools import setup
 
 
 setup(name='rdspgbadger',
-      version='1.0.0',
+      version='1.0.1',
       description=("Fetch logs from RDS postgres instance and use them with "
                    "pgbadger to generate a report."),
-      url='http://github.com/fpietka/rdspgbadger',
+      url='http://github.com/fpietka/rds-pgbadger',
       author='François Pietka',
       author_email='francois[at]pietka[dot]fr',
       license='MIT',
