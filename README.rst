@@ -24,6 +24,35 @@ Make sure your credentials are set in the ``~/.aws/credentials`` file.
 Also, you can set a region in the ``~/.aws/config`` file, so passing region option to the script is not needed.
 Last but not least, make sure you have ``pgbadger`` installed and reacheable from your ``$PATH``.
 
+Parameter group
+---------------
+
+You will have to configure your database parameter group.
+
+First of all, ensure ``log_min_duration_statement`` is set to ``0`` or higher, else you won't have anything to be parsed.
+
+Then you must enable some other parameters to get more information in the logs.
+
++-----------------------------+-------+
+| Parameter                   | Value |
++=============================+=======+
+| log_checkpoints             | 1     |
++-----------------------------+-------+
+| log_connections             | 1     |
++-----------------------------+-------+
+| log_disconnections          | 1     |
++-----------------------------+-------+
+| log_lock_waits              | 1     |
++-----------------------------+-------+
+| log_temp_files              | 0     |
++-----------------------------+-------+
+| log_autovacuum_min_duration | 0     |
++-----------------------------+-------+
+
+Also make sure ``lc_messages`` is either at engine default or set to ``C``.
+
+For further details, please refer to Dalibo's pgbadger_ documentation.
+
 Installation
 ------------
 
