@@ -82,7 +82,7 @@ def get_all_logs(dbinstance_id, output, date=None, region=None):
 
     for response in response_iterator:
         for log in (name for name in response.get("DescribeDBLogFiles")
-                    if date in name["LogFileName"]):
+                    if not date or date in name["LogFileName"]):
             response = client.download_db_log_file_portion(
                 DBInstanceIdentifier=dbinstance_id,
                 LogFileName=log["LogFileName"]
