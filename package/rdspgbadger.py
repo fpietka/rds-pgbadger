@@ -25,7 +25,7 @@ import subprocess
 
 import logging
 
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 
 
 def valid_date(s):
