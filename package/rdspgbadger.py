@@ -83,20 +83,39 @@ def get_all_logs(dbinstance_id, output, date=None, region=None):
     for response in response_iterator:
         for log in (name for name in response.get("DescribeDBLogFiles")
                     if not date or date in name["LogFileName"]):
-            response = client.download_db_log_file_portion(
-                DBInstanceIdentifier=dbinstance_id,
-                LogFileName=log["LogFileName"]
-            )
             filename = "{}/{}".format(output, log["LogFileName"])
             logger.info("Downloading file %s", filename)
-            if not os.path.exists(os.path.dirname(filename)):
-                try:
-                    os.makedirs(os.path.dirname(filename))
-                except OSError as exc:  # Guard against race condition
-                    if exc.errno != errno.EEXIST:
-                        raise
-            with open(filename, "w") as logfile:
-                logfile.write(response["LogFileData"])
+            try:
+                os.remove(filename)
+            except OSError:
+                pass
+            write_log(client, dbinstance_id, filename, log["LogFileName"])
+
+
+def write_log(client, dbinstance_id, filename, logfilename):
+    response = client.download_db_log_file_portion(
+        DBInstanceIdentifier=dbinstance_id,
+        LogFileName=logfilename
+    )
+
+    while True:
+        if not os.path.exists(os.path.dirname(filename)):
+            try:
+                os.makedirs(os.path.dirname(filename))
+            except OSError as exc:  # Guard against race condition
+                if exc.errno != errno.EEXIST:
+                    raise
+        with open(filename, "a") as logfile:
+            logfile.write(response["LogFileData"])
+
+        if not response["AdditionalDataPending"]:
+            break
+
+        response = client.download_db_log_file_portion(
+            DBInstanceIdentifier=dbinstance_id,
+            LogFileName=logfilename,
+            Marker=response["Marker"]
+        )
 
 
 def main():
