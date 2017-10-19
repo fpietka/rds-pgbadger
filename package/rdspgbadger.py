@@ -153,7 +153,7 @@ def main():
         logger.info("File(s) downloaded. Not processing with PG Badger.")
     else:
         logger.info("Generating PG Badger report.")
-        command = ("{} -p \"%t:%r:%u@%d:[%p]:\" {} -o {}/report.html"
+        command = ("{} -p \"%t:%r:%u@%d:[%p]:\" {} -o {}/report.html "
                    "{}/error/*.log.* ".format(pgbadger,
                                               args.pgbadger_args,
                                               args.output,
