@@ -52,6 +52,8 @@ parser.add_argument('-o', '--output', help="Output folder for logs and report",
                     default='out')
 parser.add_argument('-n', '--no-process', help="Only download logs",
                     action='store_true')
+parser.add_argument('-X', '--pgbadger-args', help="pgbadger arguments",
+                    default='')
 
 logger = logging.getLogger("rds-pgbadger")
 
@@ -151,11 +153,12 @@ def main():
         logger.info("File(s) downloaded. Not processing with PG Badger.")
     else:
         logger.info("Generating PG Badger report.")
-        command = ("{} -p \"%t:%r:%u@%d:[%p]:\" -o {}/report.html "
-                   "{}/error/*.log.*".format(pgbadger, args.output,
-                                             args.output))
-        logger.debug("Command:")
-        logger.debug(command)
+        command = ("{} -p \"%t:%r:%u@%d:[%p]:\" {} -o {}/report.html "
+                   "{}/error/*.log.* ".format(pgbadger,
+                                              args.pgbadger_args,
+                                              args.output,
+                                              args.output))
+        logger.debug("Command: %s", command)
         subprocess.call(command, shell=True)
         logger.info("Done")
 

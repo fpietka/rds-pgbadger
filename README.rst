@@ -76,6 +76,7 @@ Only the Instance ID is mandatory, but there are also other options you can use:
 * -r, --region : by default the script use the region specified in your AWS config file. If none, or if you wish to change it, you can use this option to do so.
 * -o, --output : by default the script outputs log files and reports to the ``out`` folder. This option allows you to change it.
 * -n, --no-process : download log file(s), but do not process them with PG Badger.
+* -X, --pgbadger-args : command-line arguments to pass to pgBadger
 
 Contribute
 ----------
