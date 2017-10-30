@@ -125,7 +125,8 @@ def write_log(client, dbinstance_id, filename, logfilename):
                 if exc.errno != errno.EEXIST:
                     raise
         with open(filename, "a") as logfile:
-            logfile.write(response["LogFileData"])
+            if 'LogFileData' in response:
+                logfile.write(response["LogFileData"])
 
         if not response["AdditionalDataPending"]:
             break
