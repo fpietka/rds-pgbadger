@@ -47,6 +47,7 @@ parser.add_argument('-v', '--verbose', help="increase output verbosity",
                     action='store_true')
 parser.add_argument('-d', '--date', help="get logs for given YYYY-MM-DD date",
                     type=valid_date)
+parser.add_argument('--assume-role', help="AWS STS AssumeRole")
 parser.add_argument('-r', '--region', help="AWS region")
 parser.add_argument('-o', '--output', help="Output folder for logs and report",
                     default='out')
@@ -71,11 +72,27 @@ def define_logger(verbose=False):
     logger.addHandler(consoleHandler)
 
 
-def get_all_logs(dbinstance_id, output, date=None, region=None):
+def get_all_logs(dbinstance_id, output,
+                 date=None, region=None, assume_role=None):
+
+    boto_args = {}
     if region:
-        client = boto3.client("rds", region_name=region)
-    else:
-        client = boto3.client("rds")
+        boto_args['region_name'] = region
+
+    if assume_role:
+        sts_client = boto3.client('sts')
+        assumedRoleObject = sts_client.assume_role(
+                RoleArn=assume_role,
+                RoleSessionName="RDSPGBadgerSession1"
+        )
+
+        credentials = assumedRoleObject['Credentials']
+        boto_args['aws_access_key_id'] = credentials['AccessKeyId']
+        boto_args['aws_secret_access_key'] = credentials['SecretAccessKey']
+        boto_args['aws_session_token'] = credentials['SessionToken']
+        logger.info('STS Assumed role {}'.format(assume_role))
+
+    client = boto3.client("rds", **boto_args)
     paginator = client.get_paginator("describe_db_log_files")
     response_iterator = paginator.paginate(
         DBInstanceIdentifier=dbinstance_id,
@@ -108,7 +125,8 @@ def write_log(client, dbinstance_id, filename, logfilename):
                 if exc.errno != errno.EEXIST:
                     raise
         with open(filename, "a") as logfile:
-            logfile.write(response["LogFileData"])
+            if 'LogFileData' in response:
+                logfile.write(response["LogFileData"])
 
         if not response["AdditionalDataPending"]:
             break
@@ -135,7 +153,13 @@ def main():
     logger.debug("pgbadger found")
 
     try:
-        get_all_logs(args.instance, args.output, args.date, args.region)
+        get_all_logs(
+                args.instance,
+                args.output,
+                date=args.date,
+                region=args.region,
+                assume_role=args.assume_role
+            )
     except (EndpointConnectionError, ClientError) as e:
         logger.error(e)
         exit(1)
