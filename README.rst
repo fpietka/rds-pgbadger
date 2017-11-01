@@ -77,6 +77,7 @@ Only the Instance ID is mandatory, but there are also other options you can use:
 * -o, --output : by default the script outputs log files and reports to the ``out`` folder. This option allows you to change it.
 * -n, --no-process : download log file(s), but do not process them with pgBadger.
 * -X, --pgbadger-args : command-line arguments to pass to pgBadger
+* --assume-role : By specifying a role you can use STS to assume a role, which is useful for cross account access with out having to setup the `.config` file. Format ``arn:aws:iam::<account_id>:<role_name>``
 
 Contribute
 ----------
