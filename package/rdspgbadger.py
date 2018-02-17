@@ -114,7 +114,8 @@ def get_all_logs(dbinstance_id, output,
 def write_log(client, dbinstance_id, filename, logfilename):
     response = client.download_db_log_file_portion(
         DBInstanceIdentifier=dbinstance_id,
-        LogFileName=logfilename
+        LogFileName=logfilename,
+        Marker="0"
     )
 
     while True:
