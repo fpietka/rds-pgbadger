@@ -112,10 +112,14 @@ def get_all_logs(dbinstance_id, output,
 
 
 def write_log(client, dbinstance_id, filename, logfilename):
+    marker = "0"
+    max_number_of_lines = 10000
+
     response = client.download_db_log_file_portion(
         DBInstanceIdentifier=dbinstance_id,
         LogFileName=logfilename,
-        Marker="0"
+        Marker=marker,
+        NumberOfLines=max_number_of_lines
     )
 
     while True:
@@ -127,7 +131,17 @@ def write_log(client, dbinstance_id, filename, logfilename):
                     raise
         with open(filename, "a") as logfile:
             if 'LogFileData' in response:
-                logfile.write(response["LogFileData"])
+                downloaded_lines = response["LogFileData"].count("\n")
+                if response["AdditionalDataPending"] and downloaded_lines < max_number_of_lines:
+                    if downloaded_lines == 0:
+                        raise Exception("Not a single line was downloaded in last portion!")
+                    max_number_of_lines = max(downloaded_lines - 10, 1)
+                    logger.warning(
+                        "Log was truncated, retrying previous portion with NumberOfLines = {0}".format(
+                            max_number_of_lines))
+                else:
+                    marker = response["Marker"]
+                    logfile.write(response["LogFileData"])
 
         if not response["AdditionalDataPending"]:
             break
@@ -135,7 +149,8 @@ def write_log(client, dbinstance_id, filename, logfilename):
         response = client.download_db_log_file_portion(
             DBInstanceIdentifier=dbinstance_id,
             LogFileName=logfilename,
-            Marker=response["Marker"]
+            Marker=marker,
+            NumberOfLines=max_number_of_lines
         )
 
 
