@@ -114,6 +114,8 @@ def get_all_logs(dbinstance_id, output,
 def write_log(client, dbinstance_id, filename, logfilename):
     marker = "0"
     max_number_of_lines = 10000
+    truncated_string = " [Your log message was truncated]"
+    slice_length = len(truncated_string) + 1
 
     response = client.download_db_log_file_portion(
         DBInstanceIdentifier=dbinstance_id,
@@ -131,21 +133,22 @@ def write_log(client, dbinstance_id, filename, logfilename):
                     raise
         with open(filename, "a") as logfile:
             if 'LogFileData' in response:
-                downloaded_lines = response["LogFileData"].count("\n")
-                if (response["AdditionalDataPending"] and
-                        downloaded_lines < max_number_of_lines):
+                if truncated_string in response["LogFileData"][-slice_length:]:
+                    downloaded_lines = response["LogFileData"].count("\n")
                     if downloaded_lines == 0:
                         raise Exception(
                             "No line was downloaded in last portion!")
                     max_number_of_lines = max(downloaded_lines - 10, 1)
-                    logger.warning("Log truncated, retrying portion with "
-                                   "NumberOfLines = {0}".format(
-                                       max_number_of_lines))
+                    logger.info("Log truncated, retrying portion with "
+                                "NumberOfLines = {0}".format(
+                                    max_number_of_lines))
                 else:
                     marker = response["Marker"]
                     logfile.write(response["LogFileData"])
 
-        if not response["AdditionalDataPending"]:
+        if ('LogFileData' in response and
+                not response["LogFileData"].rstrip("\n") and
+                not response["AdditionalDataPending"]):
             break
 
         response = client.download_db_log_file_portion(
