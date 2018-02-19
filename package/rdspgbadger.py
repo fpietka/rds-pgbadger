@@ -132,13 +132,15 @@ def write_log(client, dbinstance_id, filename, logfilename):
         with open(filename, "a") as logfile:
             if 'LogFileData' in response:
                 downloaded_lines = response["LogFileData"].count("\n")
-                if response["AdditionalDataPending"] and downloaded_lines < max_number_of_lines:
+                if (response["AdditionalDataPending"] and
+                        downloaded_lines < max_number_of_lines):
                     if downloaded_lines == 0:
-                        raise Exception("Not a single line was downloaded in last portion!")
+                        raise Exception(
+                            "No line was downloaded in last portion!")
                     max_number_of_lines = max(downloaded_lines - 10, 1)
-                    logger.warning(
-                        "Log was truncated, retrying previous portion with NumberOfLines = {0}".format(
-                            max_number_of_lines))
+                    logger.warning("Log truncated, retrying portion with "
+                                   "NumberOfLines = {0}".format(
+                                       max_number_of_lines))
                 else:
                     marker = response["Marker"]
                     logfile.write(response["LogFileData"])
