@@ -114,6 +114,7 @@ def get_all_logs(dbinstance_id, output,
 def write_log(client, dbinstance_id, filename, logfilename):
     marker = "0"
     max_number_of_lines = 10000
+    subtract_lines = 10
     truncated_string = " [Your log message was truncated]"
     slice_length = len(truncated_string) + 1
 
@@ -138,7 +139,8 @@ def write_log(client, dbinstance_id, filename, logfilename):
                     if downloaded_lines == 0:
                         raise Exception(
                             "No line was downloaded in last portion!")
-                    max_number_of_lines = max(downloaded_lines - 10, 1)
+                    max_number_of_lines = max(
+                        downloaded_lines - subtract_lines, 1)
                     logger.info("Log truncated, retrying portion with "
                                 "NumberOfLines = {0}".format(
                                     max_number_of_lines))
