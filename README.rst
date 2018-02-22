@@ -51,7 +51,7 @@ Then you must enable some other parameters to get more information in the logs.
 
 Also make sure ``lc_messages`` is either at engine default or set to ``C``.
 
-For further details, please refer to Dalibo's pgbadger_ documentation.
+For further details, please refer to Dalibo's pgBadger_ documentation.
 
 Installation
 ------------
@@ -79,6 +79,14 @@ Only the Instance ID is mandatory, but there are also other options you can use:
 * -X, --pgbadger-args : command-line arguments to pass to pgBadger
 * --assume-role : By specifying a role you can use STS to assume a role, which is useful for cross account access with out having to setup the `.config` file. Format ``arn:aws:iam::<account_id>:<role_name>``
 
+Known issue
+-----------
+
+In spite of the great work of askainet_, AWS API seems to be too instable, and sometimes download of big log files can
+fail. In such case retrying a few minutes later seems to work.
+
+see `pull request 10`_
+
 Contribute
 ----------
 
@@ -86,3 +94,5 @@ For any request, feel free to make a pull request or fill an issue on Github_.
 
 .. _pgBadger: http://dalibo.github.io/pgbadger/
 .. _Github: https://github.com/fpietka/rds-pgbadger
+.. _askainet: https://github.com/askainet
+.. _pull request 10: https://github.com/fpietka/rds-pgbadger/pull/10
