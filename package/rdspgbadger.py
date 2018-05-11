@@ -93,7 +93,7 @@ def get_all_logs(dbinstance_id, output,
         boto_args['aws_access_key_id'] = credentials['AccessKeyId']
         boto_args['aws_secret_access_key'] = credentials['SecretAccessKey']
         boto_args['aws_session_token'] = credentials['SessionToken']
-        logger.info('STS Assumed role {}'.format(assume_role))
+        logger.info('STS Assumed role %s', assume_role)
 
     client = boto3.client("rds", **boto_args)
     paginator = client.get_paginator("describe_db_log_files")
