@@ -56,6 +56,7 @@ parser.add_argument('-n', '--no-process', help="Only download logs",
 parser.add_argument('-X', '--pgbadger-args', help="pgbadger arguments",
                     default='')
 parser.add_argument('-f', '--format', help="Format of the report",
+                    choices=['text', 'html', 'bin', 'json', 'tsung'],
                     default='html')
 
 logger = logging.getLogger("rds-pgbadger")
