@@ -1,6 +1,6 @@
-.. image:: https://landscape.io/github/fpietka/rds-pgbadger/master/landscape.svg?style=flat
-   :target: https://landscape.io/github/fpietka/rds-pgbadger/master
-   :alt: Code Health
+.. image:: https://api.codacy.com/project/badge/Grade/902dd72b33df408b8d1274890cd805db
+   :target: https://www.codacy.com/project/fpietka/rds-pgbadger/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=fpietka/rds-pgbadger&amp;utm_campaign=Badge_Grade_Dashboard
+   :alt: Grade
 .. image:: https://img.shields.io/pypi/v/rdspgbadger.svg
    :target: https://pypi.python.org/pypi/rdspgbadger
    :alt: Version
