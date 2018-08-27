@@ -1,7 +1,7 @@
 boto3==1.8.1
 botocore==1.4.52
 docutils==0.12
-jmespath==0.9.0
+jmespath==0.9.3
 python-dateutil==2.5.3
 s3transfer==0.1.13
 six==1.11.0
