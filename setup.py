@@ -5,7 +5,7 @@ from setuptools import setup
 
 
 setup(name='rdspgbadger',
-      version='1.2.2',
+      version='1.2.3',
       description=("Fetch logs from RDS postgres instance and use them with "
                    "pgbadger to generate a report."),
       url='http://github.com/fpietka/rds-pgbadger',
