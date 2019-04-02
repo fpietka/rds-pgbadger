@@ -1,0 +1,15 @@
+jobs:
+  Build Error:
+    docker:
+    - image: bash:4.4.19
+    steps:
+    - run:
+        name: Config Processing Error (Don't rerun)
+        command: "# No configuration was found in your project. Please refer to https://circleci.com/docs/2.0/ to get started with your configuration.\n# \n# -------\n# Warning: This configuration was auto-generated to show you the message above.\n# Don't rerun this job. Rerunning will have no effect.\nfalse"
+workflows:
+  version: 2
+  Build Error:
+    jobs:
+    - Build Error
+version: 2
+
