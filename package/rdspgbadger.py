@@ -45,7 +45,7 @@ parser.add_argument('--version', action='version',
 
 parser.add_argument('-v', '--verbose', help="increase output verbosity",
                     action='store_true')
-parser.add_argument('-t', '--type', help="retrieve stderr or CSV logs (must set log_destination to desired format)",
+parser.add_argument('-t', '--type', help="retrieve stderr or CSV logs (must set log_destination to appropriately)",
                     choices=['stderr', 'csvlog'],
                     default='stderr')
 parser.add_argument('-d', '--date', help="get logs for given YYYY-MM-DD date",
@@ -118,11 +118,10 @@ def get_all_logs(dbinstance_id, output, type,
         for log in (name for name in response.get("DescribeDBLogFiles")
                     if not date or date in name["LogFileName"]):
             filename = "{}/{}".format(output, log["LogFileName"])
-            logger.info("Downloading file %s", filename)
-            file_ext = str(filename[-3:])
-            if type == "stderr" and file_ext == "csv" :
-                print("Wrong file type, skipping...")
+            file_name, file_ext = os.path.splitext(filename)
+            if type == "stderr" and file_ext == ".csv" :
                 continue
+            logger.info("Downloading file %s", filename)
             try:
                 os.remove(filename)
             except OSError:
