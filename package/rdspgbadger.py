@@ -45,6 +45,9 @@ parser.add_argument('--version', action='version',
 
 parser.add_argument('-v', '--verbose', help="increase output verbosity",
                     action='store_true')
+parser.add_argument('-t', '--type', help="retrieve stderr or CSV logs (must set log_destination to appropriately)",
+                    choices=['stderr', 'csvlog'],
+                    default='stderr')
 parser.add_argument('-d', '--date', help="get logs for given YYYY-MM-DD date",
                     type=valid_date)
 parser.add_argument('--assume-role', help="AWS STS AssumeRole")
@@ -75,7 +78,7 @@ def define_logger(verbose=False):
     logger.addHandler(consoleHandler)
 
 
-def get_all_logs(dbinstance_id, output,
+def get_all_logs(dbinstance_id, output, type,
                  date=None, region=None, assume_role=None):
 
     boto_args = {}
@@ -96,16 +99,28 @@ def get_all_logs(dbinstance_id, output,
         logger.info('STS Assumed role %s', assume_role)
 
     client = boto3.client("rds", **boto_args)
-    paginator = client.get_paginator("describe_db_log_files")
-    response_iterator = paginator.paginate(
-        DBInstanceIdentifier=dbinstance_id,
-        FilenameContains="postgresql.log"
-    )
+
+    if type == 'csvlog' :
+        paginator = client.get_paginator("describe_db_log_files")
+        response_iterator = paginator.paginate(
+            DBInstanceIdentifier=dbinstance_id,
+            FilenameContains=".csv"
+        )
+    else:
+        paginator = client.get_paginator("describe_db_log_files")
+        response_iterator = paginator.paginate(
+            DBInstanceIdentifier=dbinstance_id,
+            FilenameContains="postgresql.log"
+        )
+
 
     for response in response_iterator:
         for log in (name for name in response.get("DescribeDBLogFiles")
                     if not date or date in name["LogFileName"]):
             filename = "{}/{}".format(output, log["LogFileName"])
+            file_name, file_ext = os.path.splitext(filename)
+            if type == "stderr" and file_ext == ".csv" :
+                continue
             logger.info("Downloading file %s", filename)
             try:
                 os.remove(filename)
@@ -182,6 +197,7 @@ def main():
         get_all_logs(
                 args.instance,
                 args.output,
+                type=args.type,
                 date=args.date,
                 region=args.region,
                 assume_role=args.assume_role

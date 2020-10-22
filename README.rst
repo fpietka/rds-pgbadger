@@ -75,6 +75,7 @@ Only the Instance ID is mandatory, but there are also other options you can use:
 * -d, --date : by default the script downloads all the available logs. By specifying a date in the format ``YYYY-MM-DD``, you can then download only that day's logs.
 * -r, --region : by default the script use the region specified in your AWS config file. If none, or if you wish to change it, you can use this option to do so.
 * -o, --output : by default the script outputs log files and reports to the ``out`` folder. This option allows you to change it.
+* -t, --type : by default uses stderr, but can pass either ``csvlog`` or ``stderr``. If choosing csvlog, you need to update log_destination in the RDS parameters.
 * -n, --no-process : download log file(s), but do not process them with pgBadger.
 * -X, --pgbadger-args : command-line arguments to pass to pgBadger
 * --assume-role : By specifying a role you can use STS to assume a role, which is useful for cross account access with out having to setup the `.config` file. Format ``arn:aws:iam::<account_id>:<role_name>``
