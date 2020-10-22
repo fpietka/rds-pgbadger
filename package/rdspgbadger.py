@@ -79,7 +79,7 @@ def define_logger(verbose=False):
 
 
 def get_all_logs(dbinstance_id, output, type,
-                 date=None,  region=None, assume_role=None):
+                 date=None, region=None, assume_role=None):
 
     boto_args = {}
     if region:
