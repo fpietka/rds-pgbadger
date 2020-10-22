@@ -45,7 +45,7 @@ parser.add_argument('--version', action='version',
 
 parser.add_argument('-v', '--verbose', help="increase output verbosity",
                     action='store_true')
-parser.add_argument('-t', '--type', help="retrieve stderr or CSV logs (must set log_destination to appropriately)",
+parser.add_argument('-t', '--type', help="retrieve stderr or CSV logs (must set log_destination to desired format)",
                     choices=['stderr', 'csvlog'],
                     default='stderr')
 parser.add_argument('-d', '--date', help="get logs for given YYYY-MM-DD date",
