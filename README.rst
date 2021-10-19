@@ -22,6 +22,7 @@ Prerequisites
 
 Make sure your credentials are set in the ``~/.aws/credentials`` file.
 Also, you can set a region in the ``~/.aws/config`` file, so passing region option to the script is not needed.
+Alternatively you can define a profile in ``~/.aws/conf`` and ``~/.aws/credentials`` files, and use it with ``--profile=profile_name`` option.
 Last but not least, make sure you have ``pgbadger`` installed and reacheable from your ``$PATH``.
 
 Parameter group
@@ -77,7 +78,8 @@ Only the Instance ID is mandatory, but there are also other options you can use:
 * -o, --output : by default the script outputs log files and reports to the ``out`` folder. This option allows you to change it.
 * -n, --no-process : download log file(s), but do not process them with pgBadger.
 * -X, --pgbadger-args : command-line arguments to pass to pgBadger
-* --assume-role : By specifying a role you can use STS to assume a role, which is useful for cross account access with out having to setup the `.config` file. Format ``arn:aws:iam::<account_id>:<role_name>``
+* --profile : by specifying a profile name, you use your configuration in ``.config`` and ``.credentials`` files. If specified, this profile is used to assume role defined in ``--assume-role`` option.
+* --assume-role : by specifying a role you can use STS to assume a role, which is useful for cross account access with out having to setup the `.config` file. Format ``arn:aws:iam::<account_id>:<role_name>``
 
 Known issue
 -----------

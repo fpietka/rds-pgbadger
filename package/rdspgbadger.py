@@ -48,6 +48,7 @@ parser.add_argument('-v', '--verbose', help="increase output verbosity",
 parser.add_argument('-d', '--date', help="get logs for given YYYY-MM-DD date",
                     type=valid_date)
 parser.add_argument('--assume-role', help="AWS STS AssumeRole")
+parser.add_argument('--profile', help="AWS config profile")
 parser.add_argument('-r', '--region', help="AWS region")
 parser.add_argument('-o', '--output', help="Output folder for logs and report",
                     default='out')
@@ -76,27 +77,32 @@ def define_logger(verbose=False):
 
 
 def get_all_logs(dbinstance_id, output,
-                 date=None, region=None, assume_role=None):
+                 date=None, region=None, assume_role=None, profile=None):
 
-    boto_args = {}
-    if region:
-        boto_args['region_name'] = region
+    session_args = {
+        'profile_name': profile,
+        'region_name': region
+    }
+    session = boto3.Session(**session_args)
 
+    rds_client = session.client("rds")
     if assume_role:
-        sts_client = boto3.client('sts')
-        assumedRoleObject = sts_client.assume_role(
-                RoleArn=assume_role,
-                RoleSessionName="RDSPGBadgerSession1"
+        sts_client = session.client('sts')
+        assumed_role_object = sts_client.assume_role(
+            RoleArn=assume_role,
+            RoleSessionName="RDSPGBadgerSession1"
         )
 
-        credentials = assumedRoleObject['Credentials']
-        boto_args['aws_access_key_id'] = credentials['AccessKeyId']
-        boto_args['aws_secret_access_key'] = credentials['SecretAccessKey']
-        boto_args['aws_session_token'] = credentials['SessionToken']
+        credentials = assumed_role_object['Credentials']
+        boto_args = {
+            'aws_access_key_id': credentials['AccessKeyId'],
+            'aws_secret_access_key': credentials['SecretAccessKey'],
+            'aws_session_token': credentials['SessionToken']
+        }
         logger.info('STS Assumed role %s', assume_role)
+        rds_client = boto3.client("rds", **boto_args)
 
-    client = boto3.client("rds", **boto_args)
-    paginator = client.get_paginator("describe_db_log_files")
+    paginator = rds_client.get_paginator("describe_db_log_files")
     response_iterator = paginator.paginate(
         DBInstanceIdentifier=dbinstance_id,
         FilenameContains="postgresql.log"
@@ -111,7 +117,7 @@ def get_all_logs(dbinstance_id, output,
                 os.remove(filename)
             except OSError:
                 pass
-            write_log(client, dbinstance_id, filename, log["LogFileName"])
+            write_log(rds_client, dbinstance_id, filename, log["LogFileName"])
 
 
 def write_log(client, dbinstance_id, filename, logfilename):
@@ -173,6 +179,14 @@ def main():
     else:
         logger.info("Getting all logs")
 
+    if args.profile:
+        logger.info("Getting logs with AWS %s profile", args.profile)
+    else:
+        logger.info("No profile defined. Default configuration are used to get logs")
+
+    if args.assume_role:
+        logger.info("Getting logs with AWS %s role", args.assume_role)
+
     pgbadger = which("pgbadger")
     if not pgbadger:
         raise Exception("pgbadger not found")
@@ -184,7 +198,8 @@ def main():
                 args.output,
                 date=args.date,
                 region=args.region,
-                assume_role=args.assume_role
+                assume_role=args.assume_role,
+                profile=args.profile
             )
     except (EndpointConnectionError, ClientError) as e:
         logger.error(e)
